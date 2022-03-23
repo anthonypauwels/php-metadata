@@ -23,7 +23,7 @@
             "anthonypauwels\\Metadata\\": "src/"
         },
         "files": [
-            "src/hepers.php"
+            "src/helpers.php"
         ]
     }
 }
