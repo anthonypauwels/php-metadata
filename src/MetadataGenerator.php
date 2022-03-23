@@ -83,7 +83,7 @@ class MetadataGenerator
                 continue;
             }
 
-            if ( $key & MetadataProtocol::META ) {
+            if ( $this->ifMeta( $key ) ) {
                 foreach ( $values as $k => $v ) {
                     switch ( $k ) {
                         case 'title':
@@ -99,7 +99,7 @@ class MetadataGenerator
                 }
             }
 
-            if ( $key & MetadataProtocol::TWITTER ) {
+            if ( $this->ifTwitter( $key ) ) {
                 foreach ( $values as $k => $v ) {
                     switch ( $k ) {
                         case 'title':
@@ -123,7 +123,7 @@ class MetadataGenerator
                 }
             }
 
-            if ( $key & MetadataProtocol::OPENGRAPH ) {
+            if ( $this->ifOpengraph( $key ) ) {
                 foreach ( $values as $k => $v ) {
                     switch ( $k ) {
                         case 'title':
