@@ -1,0 +1,29 @@
+{
+    "name": "anthonypauwels/metadata",
+    "type": "library",
+    "description": "An helper class to build metadata tags on PHP pages",
+    "keywords": [
+        "metadata",
+        "tags",
+        "helper"
+    ],
+    "authors": [
+        {
+            "name": "Anthony Pauwels",
+            "email": "hello@anthonypauwels.be",
+            "homepage": "https://anthonypauwels.be/"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "anthonypauwels\\Metadata\\": "src/"
+        },
+        "files": [
+            "src/hepers.php"
+        ]
+    }
+}
