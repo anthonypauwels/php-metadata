@@ -1,17 +1,17 @@
 <?php
-namespace anthonypauwels\Metadata\Laravel;
+namespace Anthonypauwels\Metadata\Laravel;
 
-use Illuminate\Support\ServiceProvider;
-use anthonypauwels\Metadata\MetadataGenerator;
+use Anthonypauwels\Metadata\MetadataGenerator;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 /**
  * ServiceProvider.
  * Register the Metadata helper class as a singleton into Laravel
  *
- * @package anthonypauwels\Metadata
+ * @package Anthonypauwels\Metadata
  * @author Anthony Pauwels <hello@anthonypauwels.be>
  */
-class MetadataServiceProvider extends ServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
     /**
      * Register the MetadataGenerator

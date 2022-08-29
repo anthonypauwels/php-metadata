@@ -1,7 +1,7 @@
 {
     "name": "anthonypauwels/metadata",
     "type": "library",
-    "description": "An helper class to build metadata tags on PHP pages",
+    "description": "An helper package to build metadata tags on PHP pages",
     "keywords": [
         "metadata",
         "tags",
@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0"
+        "php": "^8.0"
     },
     "license": "MIT",
     "autoload": {
@@ -25,5 +25,15 @@
         "files": [
             "src/helpers.php"
         ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Anthonypauwels\\Metadata\\Laravel\\ServiceProvider"
+            ],
+            "aliases": {
+                "Metadata": "Anthonypauwels\\Metadata\\Laravel\\Metadata"
+            }
+        }
     }
 }

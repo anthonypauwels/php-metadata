@@ -1,5 +1,5 @@
 <?php
-use anthonypauwels\Metadata\MetadataGenerator;
+use Anthonypauwels\Metadata\MetadataGenerator;
 
 /**
  * Return the instance of the MetadataGenerator

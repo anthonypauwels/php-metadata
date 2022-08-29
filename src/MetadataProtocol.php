@@ -1,10 +1,10 @@
 <?php
-namespace anthonypauwels\Metadata;
+namespace Anthonypauwels\Metadata;
 
 /**
  * Class MetaProtocol
  *
- * @package anthonypauwels\Metadata
+ * @package Anthonypauwels\Metadata
  * @author Anthony Pauwels <hello@anthonypauwels.be>
  */
 final class MetadataProtocol

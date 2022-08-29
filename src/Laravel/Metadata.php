@@ -1,9 +1,9 @@
 <?php
-namespace anthonypauwels\Metadata\Laravel;
+namespace Anthonypauwels\Metadata\Laravel;
 
 use Illuminate\Support\Facades\Facade;
-use anthonypauwels\Metadata\MetadataProtocol;
-use anthonypauwels\Metadata\MetadataGenerator;
+use Anthonypauwels\Metadata\MetadataProtocol;
+use Anthonypauwels\Metadata\MetadataGenerator;
 
 /**
  * Facade.
@@ -35,10 +35,10 @@ use anthonypauwels\Metadata\MetadataGenerator;
  * @method static MetadataGenerator print(int $flags = MetadataProtocol::ALL)
  * @method static MetadataGenerator __toString()
  *
- * @package anthonypauwels\Metadata
+ * @package Anthonypauwels\Metadata
  * @author Anthony Pauwels <hello@anthonypauwels.be>
  */
-class MetadataFacade extends Facade
+class Metadata extends Facade
 {
     protected static function getFacadeAccessor()
     {
