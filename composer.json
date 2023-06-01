@@ -20,7 +20,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "anthonypauwels\\Metadata\\": "src/"
+            "Anthonypauwels\\Metadata\\": "src/"
         },
         "files": [
             "src/helpers.php"

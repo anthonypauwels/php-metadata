@@ -21,6 +21,9 @@ class MetadataGenerator
     /** @var MetadataGenerator|null */
     protected static ?MetadataGenerator $instance = null;
 
+    /** @var string */
+    protected string $prefixUrl = '';
+
     /** @var array Default meta tags, commonly used by search engine */
     protected array $meta = [];
 
@@ -29,9 +32,6 @@ class MetadataGenerator
 
     /** @var array Opengraph meta tags, used by Facebook, Instagram, Whatsapp, Discord, etc */
     protected array $opengraph = [];
-
-    /** @var string */
-    protected string $prefixUrl = '';
 
     /**
      * Return the MetadataGenerator instance
