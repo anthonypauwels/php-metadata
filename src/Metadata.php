@@ -2,13 +2,25 @@
 namespace Anthonypauwels\Metadata;
 
 /**
- * Class MetadataGenerator
+ * Class Metadata
  *
  * @package Anthonypauwels\Metadata
  * @author Anthony Pauwels <hello@anthonypauwels.be>
  */
-class MetadataGenerator
+class Metadata
 {
+    /** @var int All meta tags */
+    const ALL = 1;
+
+    /** @var int Only common meta tags */
+    const META = 2;
+
+    /** @var int Only Twitter meta tags */
+    const TWITTER = 4;
+
+    /** @var int Only Opengraph meta tags */
+    const OPENGRAPH = 8;
+
     /** @var string Prefix for Twitter tags */
     const TWITTER_PREFIX = 'twitter:';
 
@@ -18,11 +30,8 @@ class MetadataGenerator
     /** @var string Prefix for Facebook tags */
     const FACEBOOK_PREFIX = 'fb:';
 
-    /** @var MetadataGenerator|null */
-    protected static ?MetadataGenerator $instance = null;
-
-    /** @var string */
-    protected string $prefixUrl = '';
+    /** @var Metadata|null */
+    protected static ?Metadata $instance = null;
 
     /** @var array Default meta tags, commonly used by search engine */
     protected array $meta = [];
@@ -34,11 +43,11 @@ class MetadataGenerator
     protected array $opengraph = [];
 
     /**
-     * Return the MetadataGenerator instance
+     * Return the Metadata instance
      *
-     * @return MetadataGenerator
+     * @return Metadata
      */
-    public static function getInstance():MetadataGenerator
+    public static function getInstance():Metadata
     {
         if ( self::$instance === null ) {
             self::$instance = new self();
@@ -48,25 +57,12 @@ class MetadataGenerator
     }
 
     /**
-     * Set the prefix URL used by image and url tags
-     *
-     * @param string $prefix_url
-     * @return $this
-     */
-    public function setPrefixUrl(string $prefix_url): MetadataGenerator
-    {
-        $this->prefixUrl = $prefix_url;
-
-        return $this;
-    }
-
-    /**
      * Set an array of tags
      *
      * @param array $tags
      * @return $this
      */
-    public function setTags(array $tags): MetadataGenerator
+    public function setTags(array $tags): Metadata
     {
         foreach ( $tags as $key => $values ) {
             if ( !is_integer( $key ) ) {
@@ -90,7 +86,7 @@ class MetadataGenerator
                         case 'description':
                         case 'url':
                         case 'robots':
-                            $this->{$k}( $v, MetadataProtocol::META );
+                            $this->{$k}( $v, self::META );
                             break;
 
                         default:
@@ -105,11 +101,11 @@ class MetadataGenerator
                         case 'title':
                         case 'description':
                         case 'url':
-                            $this->{$k}( $v, MetadataProtocol::TWITTER );
+                            $this->{$k}( $v, self::TWITTER );
                             break;
 
                         case 'image':
-                            $v = array_merge( $v, [ MetadataProtocol::TWITTER ] );
+                            $v = array_merge( $v, [ self::TWITTER ] );
                             $this->image( ...$v );
                             break;
 
@@ -129,11 +125,11 @@ class MetadataGenerator
                         case 'title':
                         case 'description':
                         case 'url':
-                            $this->{$k}( $v, MetadataProtocol::OPENGRAPH );
+                            $this->{$k}( $v, self::OPENGRAPH );
                             break;
 
                         case 'image':
-                            $v = array_merge( $v, [ MetadataProtocol::OPENGRAPH ] );
+                            $v = array_merge( $v, [ self::OPENGRAPH ] );
                             $this->image( ...$v );
                             break;
 
@@ -158,7 +154,7 @@ class MetadataGenerator
      * @param int $flags
      * @return $this
      */
-    public function title(string $title, int $flags = MetadataProtocol::ALL): MetadataGenerator
+    public function title(string $title, int $flags = self::ALL): Metadata
     {
         if ( $this->ifMeta( $flags ) ) {
             $this->meta( 'title', $title );
@@ -182,7 +178,7 @@ class MetadataGenerator
      * @param int $flags
      * @return $this
      */
-    public function description(string $description, int $flags = MetadataProtocol::ALL): MetadataGenerator
+    public function description(string $description, int $flags = self::ALL): Metadata
     {
         if ( $this->ifMeta( $flags ) ) {
             $this->meta( 'description', $description );
@@ -207,24 +203,26 @@ class MetadataGenerator
      * @param int $flags
      * @return $this
      */
-    public function image(string $url, array $options = [], int $flags = MetadataProtocol::TWITTER | MetadataProtocol::OPENGRAPH): MetadataGenerator
+    public function image(string $url, array $options = [], int $flags = self::TWITTER | self::OPENGRAPH): Metadata
     {
-        $meta = [ 'width' => null, 'height' => null, 'type' => null, 'alt' => null, 'secure' => null];
+        $meta = [ 'width' => null, 'height' => null, 'type' => null, 'alt' => null];
 
         $options = array_intersect_key( $options, array_flip( array_keys( $meta ) ) );
         $options = array_filter( array_merge( $meta, $options ) );
 
-        switch ( $options['type'] ) {
-            case 'jpeg' :
-            case 'jpg' :
-            case 'png' :
-            case 'gif' :
-                $options['type'] = 'image/' . strtolower( $options['type'] );
-                break;
+        if ( isset( $options['type'] ) ) {
+            switch ( $options['type'] ) {
+                case 'jpeg' :
+                case 'jpg' :
+                case 'png' :
+                case 'gif' :
+                    $options['type'] = 'image/' . strtolower( $options['type'] );
+                    break;
+            }
         }
 
         if ( $this->ifTwitter( $flags ) ) {
-            $this->twitter( 'image', $this->getPrefixUrl() . $url );
+            $this->twitter( 'image', $url );
 
             foreach ( $options as $key => $value ) {
                 $this->twitter( 'image:' . $key, $value );
@@ -232,7 +230,7 @@ class MetadataGenerator
         }
 
         if ( $this->ifOpengraph( $flags ) ) {
-            $this->opengraph( 'image', $this->getPrefixUrl() . $url );
+            $this->opengraph( 'image', $url );
 
             foreach ( $options as $key => $value ) {
                 $this->opengraph( 'image:' . $key, $value );
@@ -243,24 +241,48 @@ class MetadataGenerator
     }
 
     /**
-     * Set the page URL; by default, it's the current URL
+     * Shortcut to image() method for Twitter Card
      *
-     * @param string|null $url
+     * @param string $url
+     * @param array $options
+     * @return $this
+     */
+    public function twitterImage(string $url, array $options = []): Metadata
+    {
+        $this->image( $url, $options, self::TWITTER );
+
+        return $this;
+    }
+
+    /**
+     * Shortcut to image() method for Opengraph
+     *
+     * @param string $url
+     * @param array $options
+     * @return $this
+     */
+    public function opengraphImage(string $url, array $options = []): Metadata
+    {
+        $this->image( $url, $options, self::OPENGRAPH );
+
+        return $this;
+    }
+
+    /**
+     * Set the page URL
+     *
+     * @param string $url
      * @param int $flags
      * @return $this
      */
-    public function url(?string $url = null, int $flags = MetadataProtocol::TWITTER | MetadataProtocol::OPENGRAPH): MetadataGenerator
+    public function url(string $url, int $flags = self::TWITTER | self::OPENGRAPH): Metadata
     {
-        if ( $url === null ) { // no URL has been set, so we fetch the current url
-            $url = $_SERVER[ 'REQUEST_URI' ];
-        }
-
         if ( $this->ifTwitter( $flags ) ) {
-            $this->twitter( 'url', $this->getPrefixUrl() . $url );
+            $this->twitter( 'url', $url );
         }
 
         if ( $this->ifOpengraph( $flags ) ) {
-            $this->opengraph( 'url', $this->getPrefixUrl() . $url );
+            $this->opengraph( 'url', $url );
         }
 
         return $this;
@@ -273,7 +295,7 @@ class MetadataGenerator
      * @param array $options
      * @return $this
      */
-    public function type(string $type = 'website', array $options = []): MetadataGenerator
+    public function type(string $type = 'website', array $options = []): Metadata
     {
         $prefix = self::OPENGRAPH_PREFIX;
         $authorized_keys = [];
@@ -362,7 +384,7 @@ class MetadataGenerator
      * @param string $author
      * @return $this
      */
-    public function author(string $author): MetadataGenerator
+    public function author(string $author): Metadata
     {
         $this->meta( 'author', $author );
 
@@ -375,7 +397,7 @@ class MetadataGenerator
      * @param string $card_type
      * @return $this
      */
-    public function twitterCard(string $card_type = 'summary'): MetadataGenerator
+    public function twitterCard(string $card_type = 'summary'): Metadata
     {
         if ( !in_array( $card_type, [ 'summary', 'summary_large_image', 'app', 'player' ] ) ) {
             $card_type = 'summary';
@@ -392,7 +414,7 @@ class MetadataGenerator
      * @param string $twitter_site
      * @return $this
      */
-    public function twitterSite(string $twitter_site): MetadataGenerator
+    public function twitterSite(string $twitter_site): Metadata
     {
         $this->twitter( 'site', $twitter_site );
 
@@ -405,7 +427,7 @@ class MetadataGenerator
      * @param string $twitter_creator
      * @return $this
      */
-    public function twitterCreator(string $twitter_creator): MetadataGenerator
+    public function twitterCreator(string $twitter_creator): Metadata
     {
         $this->twitter( 'creator', $twitter_creator );
 
@@ -418,7 +440,7 @@ class MetadataGenerator
      * @param string $app_id
      * @return $this
      */
-    public function fbAppId(string $app_id): MetadataGenerator
+    public function fbAppId(string $app_id): Metadata
     {
         $this->opengraph( 'app_id', $app_id, self::FACEBOOK_PREFIX );
 
@@ -431,7 +453,7 @@ class MetadataGenerator
      * @param string $admins
      * @return $this
      */
-    public function fbAdmins(string $admins): MetadataGenerator
+    public function fbAdmins(string $admins): Metadata
     {
         $this->opengraph( 'admins', $admins, self::FACEBOOK_PREFIX );
 
@@ -444,9 +466,22 @@ class MetadataGenerator
      * @param string $site_name
      * @return $this
      */
-    public function siteName(string $site_name): MetadataGenerator
+    public function siteName(string $site_name): Metadata
     {
         $this->opengraph( 'site_name', $site_name );
+
+        return $this;
+    }
+
+    /**
+     * Set the og:locale tag
+     *
+     * @param string $locale
+     * @return $this
+     */
+    public function locale(string $locale): Metadata
+    {
+        $this->opengraph( 'locale', $locale );
 
         return $this;
     }
@@ -457,9 +492,9 @@ class MetadataGenerator
      * @param bool $value
      * @return $this
      */
-    public function disablePinterestRichPin(bool $value = true): MetadataGenerator
+    public function disablePinterestRichPin(bool $value = true): Metadata
     {
-        $this->meta( 'pinterest-rich-pin', !$value ? 'false' : 'true' );
+        $this->meta( 'pinterest-rich-pin', $value ? 'false' : 'true' );
 
         return $this;
     }
@@ -468,17 +503,15 @@ class MetadataGenerator
      * Set the robot meta tag
      *
      * @param mixed ...$values
-     * @return MetadataGenerator
+     * @return Metadata
      */
-    public function robots(...$values): MetadataGenerator
+    public function robots(...$values): Metadata
     {
         if ( isset( $values[0] ) && is_array( $values[0] ) ) {
             $values = $values[0];
         }
 
-        $authorized_values = [ 'all', 'noindex', 'nofollow', 'none', 'noarchive', 'nosnippet', 'notranslate', 'noimageindex', ];
-
-        $this->meta('robots', implode(', ', array_intersect( $values, $authorized_values ) ) );
+        $this->meta('robots', implode(', ', $values ) );
 
         return $this;
     }
@@ -490,7 +523,7 @@ class MetadataGenerator
      * @param string $value
      * @return $this
      */
-    public function meta(string $name, string $value): MetadataGenerator
+    public function meta(string $name, string $value): Metadata
     {
         $this->meta[ $name ] = compact( 'name', 'value' );
 
@@ -505,7 +538,7 @@ class MetadataGenerator
      * @param string $prefix
      * @return $this
      */
-    public function twitter(string $name, string $value, string $prefix = self::TWITTER_PREFIX): MetadataGenerator
+    public function twitter(string $name, string $value, string $prefix = self::TWITTER_PREFIX): Metadata
     {
         $this->twitter[ $name ] = compact( 'name', 'value', 'prefix' );
 
@@ -520,7 +553,7 @@ class MetadataGenerator
      * @param string $prefix
      * @return $this
      */
-    public function opengraph(string $name, string $value, string $prefix = self::OPENGRAPH_PREFIX): MetadataGenerator
+    public function opengraph(string $name, string $value, string $prefix = self::OPENGRAPH_PREFIX): Metadata
     {
         $this->opengraph[ $name ] = compact( 'name', 'value', 'prefix' );
 
@@ -533,7 +566,7 @@ class MetadataGenerator
      * @param int $flags Determine the type of meta to generate
      * @return string
      */
-    public function toHtml(int $flags = MetadataProtocol::ALL):string
+    public function toHtml(int $flags = self::ALL):string
     {
         $buffer = '';
 
@@ -563,7 +596,7 @@ class MetadataGenerator
      *
      * @param int $flags  Determine the type of meta to generate
      */
-    public function print(int $flags = MetadataProtocol::ALL):void
+    public function print(int $flags = self::ALL):void
     {
         echo $this->toHtml( $flags );
     }
@@ -586,7 +619,7 @@ class MetadataGenerator
      */
     protected function ifMeta(int $flags):bool
     {
-        return $flags & MetadataProtocol::ALL || $flags & MetadataProtocol::META;
+        return $flags & self::ALL || $flags & self::META;
     }
 
     /**
@@ -597,7 +630,7 @@ class MetadataGenerator
      */
     protected function ifTwitter(int $flags):bool
     {
-        return $flags & MetadataProtocol::ALL || $flags & MetadataProtocol::TWITTER;
+        return $flags & self::ALL || $flags & self::TWITTER;
     }
 
     /**
@@ -608,26 +641,6 @@ class MetadataGenerator
      */
     protected function ifOpengraph(int $flags):bool
     {
-        return $flags & MetadataProtocol::ALL || $flags & MetadataProtocol::OPENGRAPH;
-    }
-
-    /**
-     * Return the prefix URL, mostly the domain name
-     *
-     * @return string
-     */
-    protected function getPrefixUrl():string
-    {
-        if ( $this->prefixUrl !== '' ) {
-            return $this->prefixUrl;
-        }
-
-        if ( isset( $_SERVER[ 'HTTPS' ] ) && $_SERVER[ 'HTTPS' ] === 'on' ) {
-            $protocol = 'https';
-        } else {
-            $protocol = 'http';
-        }
-
-        return $protocol . '://' . $_SERVER[ 'HTTP_HOST' ];
+        return $flags & self::ALL || $flags & self::OPENGRAPH;
     }
 }

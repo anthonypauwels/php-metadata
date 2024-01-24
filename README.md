@@ -25,19 +25,18 @@ Then add this line to your facades in `config/app.php`:
 
 ### Helper function
 
-Helper function returns an instance of `MetadataGenerator`.
+Helper function returns an instance of `Metadata`.
 ```php
-$metadataGenerator = metadata();
+$metadata = metadata();
 ```
 
 ```php
 metadata()->title( 'Website title' );
 metadata()->description( 'Website description' );
-metadata()->setPrefixUrl( 'https://website.com/' );
-metadata()->url( '/' );
+metadata()->url( url()->full() );
 metadata()->author( 'Anthony Pauwels' );
-metadata()->image( '/img/facebook_meta.jpg', ['width' => 1200, 'height' => 600, 'type' => 'JPEG'], MetaProtocol::OPENGRAPH );
-metadata()->image( '/img/twitter_meta.jpg', ['width' => 600, 'height' => 400, 'type' => 'JPEG'], MetaProtocol::TWITTER );
+metadata()->opengraphImage( asset('/img/facebook_meta.jpg'), ['width' => 1200, 'height' => 600, 'type' => 'JPEG'] );
+metadata()->twitterImage( asset('/img/twitter_meta.jpg'), ['width' => 600, 'height' => 400, 'type' => 'JPEG'] );
 metadata()->twitterCard( 'app' );
 metadata()->type( 'website' );
 ```
@@ -53,117 +52,122 @@ Metadata::title( 'Website title' );
 
 ### API documentation
 
-#### MetadataGenerator
+#### Metadata
 ```php
 /**
- * Return the MetadataGenerator instance
+ * Return the Metadata instance
  */
-function getInstance():MetadataGenerator; 
-
-/**
- * Set the prefix URL used by image and url tags
- */
-function setPrefixUrl(string $prefix_url): MetadataGenerator;
+function getInstance():Metadata; 
 
 /**
  * Set an array of tags
  */
-function setTags(array $tags): MetadataGenerator;
+function setTags(array $tags): Metadata;
 
 /**
  * Set the page title in meta tags
  */
-function title(string $title, int $flags = MetadataProtocol::ALL): MetadataGenerator;
+function title(string $title, int $flags = Metadata::ALL): Metadata;
 
 /**
  * Set the page description in meta tags
  */
-function description(string $description, int $flags = MetadataProtocol::ALL): MetadataGenerator;
+function description(string $description, int $flags = Metadata::ALL): Metadata;
 
 /**
  * Set the image for the page used for cards inside app; Can be used to set image options like size or mimetype
  */
-function image(string $url, array $options = [], int $flags = MetadataProtocol::TWITTER | MetadataProtocol::OPENGRAPH): MetadataGenerator;
+function image(string $url, array $options = [], int $flags = Metadata::TWITTER | Metadata::OPENGRAPH): Metadata;
 
 /**
- * Set the page URL; by default, it's the current URL
+* Shortcut to image() method for Twitter Card
  */
-function url(?string $url = null, int $flags = MetadataProtocol::TWITTER | MetadataProtocol::OPENGRAPH): MetadataGenerator;
+function twitterImage(string $url, array $options = []): Metadata
+
+/**
+* Shortcut to image() method for Opengraph
+ */
+function opengraphImage(string $url, array $options = []): Metadata
+
+/**
+ * Set the page URL
+ */
+function url(string $url, int $flags = Metadata::TWITTER | Metadata::OPENGRAPH): Metadata;
 
 /**
  * Set the content og type
  */
-function type(string $type = 'website', array $options = []): MetadataGenerator;
+function type(string $type = 'website', array $options = []): Metadata;
 
 /**
  * Set the author's name
  */
-function author(string $author): MetadataGenerator;
+function author(string $author): Metadata;
 
 /**
  * Set the Twitter card format
  */
-function twitterCard(string $card_type = 'summary'): MetadataGenerator;
+function twitterCard(string $card_type = 'summary'): Metadata;
 
 /**
  * Set the Twitter website profile
  */
-function twitterSite(string $twitter_site): MetadataGenerator;
+function twitterSite(string $twitter_site): Metadata;
 
 /**
  * Set the twitter author profile
  */
-function twitterCreator(string $twitter_creator): MetadataGenerator;
+function twitterCreator(string $twitter_creator): Metadata;
 
 /**
  * Set the facebook app_id
  */
-function fbAppId(string $app_id): MetadataGenerator;
+function fbAppId(string $app_id): Metadata;
 
 /**
  * Set the facebook admins tag
  */
-function fbAdmins(string $admins): MetadataGenerator;
+function fbAdmins(string $admins): Metadata;
 
 /**
  * Set the og:site_name tag
  */
-function siteName(string $site_name): MetadataGenerator;
+function siteName(string $site_name): Metadata;
 
 /**
  * Disable (or enable if $value is true) the pinterest-rich-pin
  */
-function disablePinterestRichPin(bool $value = true): MetadataGenerator;
+function disablePinterestRichPin(bool $value = true): Metadata;
 
 /**
  * Set the robot meta tag
  */
-function robots(...$values): MetadataGenerator;
+function robots(...$values): Metadata;
 
 /**
  * Set a meta tag with given key and given value
  */
-function meta(string $name, string $value): MetadataGenerator;
+function meta(string $name, string $value): Metadata;
 
 /**
  * Set a meta tag for Twitter
  */
-function twitter(string $name, string $value, string $prefix = self::TWITTER_PREFIX): MetadataGenerator;
+function twitter(string $name, string $value, string $prefix = Metadata::TWITTER_PREFIX): Metadata;
 
 /**
  * Set a meta tag for Opengraph
  */
-function opengraph(string $name, string $value, string $prefix = self::OPENGRAPH_PREFIX): MetadataGenerator;
+function opengraph(string $name, string $value, string $prefix = Metadata::OPENGRAPH_PREFIX): Metadata;
 
 /**
  * Generate the HTML code of meta tags
  */
-function toHtml(int $flags = MetadataProtocol::ALL):string;
+function toHtml(int $flags = Metadata::ALL):string;
 
 /**
  * Print the generated HTML code
  */
-function print(int $flags = MetadataProtocol::ALL):void;
+function print(int $flags = Metadata::ALL):void;
 
 /**
  * Return the HTML code of meta tags with default parameter

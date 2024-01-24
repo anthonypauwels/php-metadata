@@ -1,14 +1,14 @@
 <?php
-use Anthonypauwels\Metadata\MetadataGenerator;
+use Anthonypauwels\Metadata\Metadata;
 
 /**
  * Return the instance of the MetadataGenerator
  *
- * @return MetadataGenerator
+ * @return Metadata
  */
 if ( !function_exists( 'metadata' ) ) {
-    function metadata():MetadataGenerator
+    function metadata():Metadata
     {
-        return MetadataGenerator::getInstance();
+        return Metadata::getInstance();
     }
 }

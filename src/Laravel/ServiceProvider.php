@@ -1,7 +1,8 @@
 <?php
 namespace Anthonypauwels\Metadata\Laravel;
 
-use Anthonypauwels\Metadata\MetadataGenerator;
+use Anthonypauwels\Metadata\Metadata;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 /**
@@ -14,12 +15,12 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 class ServiceProvider extends BaseServiceProvider
 {
     /**
-     * Register the MetadataGenerator
+     * Register the Metadata
      */
     public function register()
     {
         $this->app->singleton('metadata', function () {
-            return new MetadataGenerator();
+            return new Metadata();
         } );
     }
 
@@ -30,6 +31,6 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function provides():array
     {
-        return [ MetadataGenerator::class ];
+        return [ Metadata::class ];
     }
 }
